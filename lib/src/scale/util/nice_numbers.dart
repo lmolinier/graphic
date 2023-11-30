@@ -202,3 +202,25 @@ List<num> _wilkinsonExtended(
 
   return ticks;
 }
+
+/// Calculates nice range for [LogarithmicScaleConv].
+List<num> logarithmicNiceNumbers(
+  num min,
+  num max,
+  int n,
+) {
+  var nums = <num>[];
+  final lmin = dart_math.log(min)/dart_math.ln10;
+  final lmax = dart_math.log(max)/dart_math.ln10;
+  final magnitude = dart_math.log(max - min)/dart_math.ln10;
+  final ticksPerMagnitude = n ~/ magnitude.toInt();
+  for( var i = lmin.floor() ; i < lmax; i++ ){
+    nums.addAll(
+      linearNiceNumbers(1, 10, ticksPerMagnitude)
+        .map( (e) => _prettyNumber(e * dart_math.pow(10, i))
+      )
+    );
+  }
+  
+  return nums.toSet().toList()..sort();
+}

@@ -134,6 +134,7 @@ export 'src/scale/scale.dart' show Scale, ScaleConv;
 export 'src/scale/discrete.dart' show DiscreteScale, DiscreteScaleConv;
 export 'src/scale/continuous.dart' show ContinuousScale, ContinuousScaleConv;
 export 'src/scale/linear.dart' show LinearScale, LinearScaleConv;
+export 'src/scale/logarithmic.dart' show LogarithmicScale, LogarithmicScaleConv;
 export 'src/scale/ordinal.dart' show OrdinalScale, OrdinalScaleConv;
 export 'src/scale/time.dart' show TimeScale, TimeScaleConv;
 export 'src/scale/util/nice_numbers.dart' show linearNiceNumbers;

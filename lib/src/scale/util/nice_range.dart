@@ -84,3 +84,45 @@ List<num> linearNiceRange(
   }
   return d;
 }
+
+/// Calculate the nice range for [LogarithmicScaleConv].
+List<num> logarithmicNiceRange(
+  num min,
+  num max,
+  int count,
+) {
+  // From d3-scale.
+
+  final d = [min, max];
+  int i0 = 0;
+  int i1 = d.length - 1;
+  num start = d[i0];
+  num stop = d[i1];
+
+  if (stop < start) {
+    final tempValue = start;
+    start = stop;
+    stop = tempValue;
+    final tempIndex = i0;
+    i0 = i1;
+    i1 = tempIndex;
+  }
+
+  // If min and max are same, return directly.
+  if (stop - start < 1e-15 || count <= 0) {
+    return [start, stop];
+  }
+
+  // Transform min and max to log space.
+  start = dart_math.log(start);
+  stop = dart_math.log(stop);
+
+  // Calculate the nice range in log space.
+  final step = _tickIncrement(start, stop, count);
+
+  // Transform the nice range back to linear space.
+  d[i0] = dart_math.exp(start / step).floor() * step;
+  d[i1] = dart_math.exp(stop / step).ceil() * step;
+
+  return d;
+}
