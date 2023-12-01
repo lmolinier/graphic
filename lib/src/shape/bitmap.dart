@@ -122,7 +122,7 @@ class HistoricHeatmapBitmapShape extends HeatmapBitmapShape {
   /// The length of the history.
   final int length;
 
-  Picture? _lastPicture;
+  Image? _lastImage;
 
   @override
   bool equalTo(Object other) => other is HistoricHeatmapBitmapShape;
@@ -163,23 +163,24 @@ class HistoricHeatmapBitmapShape extends HeatmapBitmapShape {
     }
 
     var lineHeight = coord.region.height / length;  
-    if (_lastPicture != null) {
-      canvas.drawImage(_lastPicture!.toImageSync(
-          /* no real matter of the size here, must be bigger than
-           * the coord though
-           */
-          coord.region.width.toInt()*2, 
-          coord.region.height.toInt()*2,
-        ), 
+    if (_lastImage != null) {
+      canvas.drawImage(_lastImage!,
         Offset(0, lineHeight), 
         Paint(),
       );
     }
     
-    _lastPicture = recorder.endRecording();
+    final picture = recorder.endRecording();
+    _lastImage = picture.toImageSync(
+          /* no real matter of the size here, must be bigger than
+           * the coord though
+           */
+          coord.region.width.toInt()*2, 
+          coord.region.height.toInt()*2,
+        ); 
     return [
       PictureElement(
-        picture: _lastPicture!,
+        picture: picture,
         anchor: origin,
         style: PictureStyle(),
       )
