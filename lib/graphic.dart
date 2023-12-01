@@ -175,6 +175,7 @@ export 'src/shape/interval.dart' show IntervalShape, RectShape, FunnelShape;
 export 'src/shape/line.dart' show LineShape, BasicLineShape;
 export 'src/shape/point.dart' show PointShape, CircleShape, SquareShape;
 export 'src/shape/polygon.dart' show PolygonShape, HeatmapShape;
+export 'src/shape/bitmap.dart' show HistoricHeatmapBitmapShape, HeatmapBitmapShape;
 export 'src/shape/util/style.dart' show getPaintStyle;
 
 export 'src/graffiti/transition.dart' show Transition;
@@ -184,6 +185,7 @@ export 'src/graffiti/element/arc.dart' show ArcElement;
 export 'src/graffiti/element/circle.dart' show CircleElement;
 export 'src/graffiti/element/group.dart' show GroupElement;
 export 'src/graffiti/element/image.dart' show ImageElement, ImageStyle;
+export 'src/graffiti/element/picture.dart' show PictureElement, PictureStyle;
 export 'src/graffiti/element/label.dart' show LabelElement, LabelStyle;
 export 'src/graffiti/element/line.dart' show LineElement;
 export 'src/graffiti/element/oval.dart' show OvalElement;
