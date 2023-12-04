@@ -185,7 +185,6 @@ export 'src/graffiti/element/arc.dart' show ArcElement;
 export 'src/graffiti/element/circle.dart' show CircleElement;
 export 'src/graffiti/element/group.dart' show GroupElement;
 export 'src/graffiti/element/image.dart' show ImageElement, ImageStyle;
-export 'src/graffiti/element/picture.dart' show PictureElement, PictureStyle;
 export 'src/graffiti/element/label.dart' show LabelElement, LabelStyle;
 export 'src/graffiti/element/line.dart' show LineElement;
 export 'src/graffiti/element/oval.dart' show OvalElement;

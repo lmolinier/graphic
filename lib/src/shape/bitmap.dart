@@ -15,6 +15,7 @@ import 'package:graphic/src/mark/polygon.dart';
 import 'package:graphic/src/graffiti/element/element.dart';
 import 'package:graphic/src/shape/polygon.dart';
 import 'package:graphic/src/util/collection.dart';
+import 'package:vector_math/vector_math_64.dart';
 
 import 'util/style.dart';
 import 'partition.dart';
@@ -80,12 +81,20 @@ class HeatmapBitmapShape extends PolygonShape {
 
       leftBound = rightBound;
     }
-
+    
+    final picture = recorder.endRecording();
+    final full = coord.convert(Offset(1, 0));
+    final image =  picture.toImageSync(
+          full.dx.toInt(), 
+          full.dy.toInt(), 
+        );
     return [
-      PictureElement(
-        picture: recorder.endRecording(),
-        anchor: origin,
-        style: PictureStyle(),
+      ImageElement(
+        image: image,
+        anchor: Offset.zero,
+        defaultAlign: Alignment.bottomRight,
+        style: ImageStyle(
+        ),
       )
     ];
   }
@@ -153,36 +162,40 @@ class HistoricHeatmapBitmapShape extends HeatmapBitmapShape {
       canvas.drawRect(
         Rect.fromPoints(
           coord.convert(Offset(leftBound, 1)),
-          coord.convert(Offset(rightBound, 0)),
+          coord.convert(Offset(rightBound, 1-1.0/length)),
         ),
         paint,
-        // = const Color.fromARGB(0, 250, 1, 1),
       );
-
       leftBound = rightBound;
     }
 
-    var lineHeight = coord.region.height / length;  
     if (_lastImage != null) {
-      canvas.drawImage(_lastImage!,
-        Offset(0, lineHeight), 
+      canvas.drawImageRect(_lastImage!, 
+        Rect.fromPoints(
+        coord.convert(Offset(0, 1)), 
+        coord.convert(Offset(1, 1.0/length)),
+        ),
+        Rect.fromPoints(
+          coord.convert(Offset(0, 1-1.0/length)),
+          coord.convert(Offset(1, 0)),
+        ),
         Paint(),
       );
     }
     
     final picture = recorder.endRecording();
+    final full = coord.convert(Offset(1, 0));
     _lastImage = picture.toImageSync(
-          /* no real matter of the size here, must be bigger than
-           * the coord though
-           */
-          coord.region.width.toInt()*2, 
-          coord.region.height.toInt()*2,
-        ); 
+          full.dx.toInt(), 
+          full.dy.toInt(), 
+        );
     return [
-      PictureElement(
-        picture: picture,
-        anchor: origin,
-        style: PictureStyle(),
+      ImageElement(
+        image: _lastImage!,
+        anchor: Offset.zero,
+        defaultAlign: Alignment.bottomRight,
+        style: ImageStyle(
+        ),
       )
     ];
   }
