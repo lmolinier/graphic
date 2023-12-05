@@ -145,14 +145,11 @@ class HistoricHeatmapBitmapShape extends HeatmapBitmapShape {
     PictureRecorder recorder = PictureRecorder();
     Canvas canvas = Canvas(recorder);
 
-    var leftBound = 0.0;
-    var rightBound = 0.0;
-
     for (var i = 0; i < group.length - 1; i++) {
       final item = group[i];
       final point = group[i].position.last;
-
-      rightBound = point.dx + (leftBound - point.dx)/2;
+      final nextPoint = group[i + 1].position.last;
+      final dx = (nextPoint.dx - point.dx).abs();
       
       final style = getPaintStyle(item, false, 0, null, null);
       final paint = Paint()
@@ -161,12 +158,11 @@ class HistoricHeatmapBitmapShape extends HeatmapBitmapShape {
 
       canvas.drawRect(
         Rect.fromPoints(
-          coord.convert(Offset(leftBound, 1)),
-          coord.convert(Offset(rightBound, 1-1.0/length)),
+          coord.convert(Offset(point.dx - dx/2, 1)),
+          coord.convert(Offset(point.dx + dx/2, 1-1.0/length)),
         ),
         paint,
       );
-      leftBound = rightBound;
     }
 
     if (_lastImage != null) {
