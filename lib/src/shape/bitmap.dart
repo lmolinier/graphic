@@ -3,22 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/painting.dart';
 import 'package:graphic/graphic.dart';
-import 'package:graphic/src/coord/coord.dart';
-import 'package:graphic/src/coord/polar.dart';
-import 'package:graphic/src/coord/rect.dart';
-import 'package:graphic/src/dataflow/tuple.dart';
-import 'package:graphic/src/graffiti/element/label.dart';
-import 'package:graphic/src/graffiti/element/polygon.dart';
-import 'package:graphic/src/graffiti/element/rect.dart';
-import 'package:graphic/src/graffiti/element/sector.dart';
-import 'package:graphic/src/mark/polygon.dart';
-import 'package:graphic/src/graffiti/element/element.dart';
-import 'package:graphic/src/shape/polygon.dart';
-import 'package:graphic/src/util/collection.dart';
-import 'package:vector_math/vector_math_64.dart';
 
-import 'util/style.dart';
-import 'partition.dart';
 
 /// A painted bitmap shape.
 ///
