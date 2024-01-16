@@ -1,14 +1,11 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/painting.dart';
 import 'package:graphic/graphic.dart';
 
-
 /// A painted bitmap shape.
 ///
 class HeatmapBitmapShape extends PolygonShape {
-
   @override
   bool equalTo(Object other) => other is HeatmapBitmapShape;
 
@@ -25,13 +22,13 @@ class HeatmapBitmapShape extends PolygonShape {
     // lines have the same height
     var stepY = double.infinity;
     for (var i = 0; i < group.length - 1; i++) {
-        final point = group[i].position.last;
-        final nextPoint = group[i + 1].position.last;
-        final dy = (nextPoint.dy - point.dy).abs();
-        if (dy != 0) {
-          stepY = min(stepY, dy);
-        }
+      final point = group[i].position.last;
+      final nextPoint = group[i + 1].position.last;
+      final dy = (nextPoint.dy - point.dy).abs();
+      if (dy != 0) {
+        stepY = stepY < dy ? stepY : dy;
       }
+    }
     if (!stepY.isFinite) {
       stepY = 1;
     }
@@ -48,8 +45,8 @@ class HeatmapBitmapShape extends PolygonShape {
       if (point.dx < leftBound) {
         leftBound = 0;
       }
-      rightBound = point.dx + (leftBound - point.dx)/2;
-      
+      rightBound = point.dx + (leftBound - point.dx) / 2;
+
       final style = getPaintStyle(item, false, 0, null, null);
       final paint = Paint()
         ..style = PaintingStyle.fill
@@ -66,20 +63,19 @@ class HeatmapBitmapShape extends PolygonShape {
 
       leftBound = rightBound;
     }
-    
+
     final picture = recorder.endRecording();
     final full = coord.convert(Offset(1, 0));
-    final image =  picture.toImageSync(
-          full.dx.toInt(), 
-          full.dy.toInt(), 
-        );
+    final image = picture.toImageSync(
+      full.dx.toInt(),
+      full.dy.toInt(),
+    );
     return [
       ImageElement(
         image: image,
         anchor: Offset.zero,
         defaultAlign: Alignment.bottomRight,
-        style: ImageStyle(
-        ),
+        style: ImageStyle(),
       )
     ];
   }
@@ -107,35 +103,31 @@ class HeatmapBitmapShape extends PolygonShape {
 }
 
 class HistoricHeatmapBitmapShape extends HeatmapBitmapShape {
-
   /// Creates a heatmap where each data is appended to the previous data.
   HistoricHeatmapBitmapShape({
     required this.length,
-  });
+  }) {
+    _history = [];
+  }
 
   /// The length of the history.
   final int length;
 
-  Image? _lastImage;
+  late List<Picture> _history;
 
   @override
   bool equalTo(Object other) => other is HistoricHeatmapBitmapShape;
 
-  @override
-  List<MarkElement> drawGroupPrimitives(
-    List<Attributes> group,
-    CoordConv coord,
-    Offset origin,
-  ) {
+  Picture drawLine(List<Attributes> group, CoordConv coord, double height ) {
     PictureRecorder recorder = PictureRecorder();
     Canvas canvas = Canvas(recorder);
-
+    
     for (var i = 0; i < group.length - 1; i++) {
       final item = group[i];
       final point = group[i].position.last;
       final nextPoint = group[i + 1].position.last;
       final dx = (nextPoint.dx - point.dx).abs();
-      
+
       final style = getPaintStyle(item, false, 0, null, null);
       final paint = Paint()
         ..style = PaintingStyle.fill
@@ -143,40 +135,49 @@ class HistoricHeatmapBitmapShape extends HeatmapBitmapShape {
 
       canvas.drawRect(
         Rect.fromPoints(
-          coord.convert(Offset(point.dx - dx/2, 1)),
-          coord.convert(Offset(point.dx + dx/2, 1-1.0/length)),
+          coord.convert(Offset(point.dx - dx / 2, 1)),
+          coord.convert(Offset(point.dx + dx / 2, 1 - height)),
         ),
         paint,
       );
     }
 
-    if (_lastImage != null) {
-      canvas.drawImageRect(_lastImage!, 
-        Rect.fromPoints(
-        coord.convert(Offset(0, 1)), 
-        coord.convert(Offset(1, 1.0/length)),
-        ),
-        Rect.fromPoints(
-          coord.convert(Offset(0, 1-1.0/length)),
-          coord.convert(Offset(1, 0)),
-        ),
-        Paint(),
-      );
+    return recorder.endRecording();
+  }
+
+  @override
+  List<MarkElement> drawGroupPrimitives(
+    List<Attributes> group,
+    CoordConv coord,
+    Offset origin,
+  ) {
+    final double height = 1.0;
+    final line = drawLine(group, coord, height);
+    if(_history.length >= length) {
+      _history.removeAt(0);
+    }
+    _history.add(line);
+
+    PictureRecorder recorder = PictureRecorder();
+    Canvas canvas = Canvas(recorder);
+  
+    for (var i = _history.length-1; i >=0 ; i--) {
+      final picture = _history[i];
+      canvas.drawPicture(picture);
+      canvas.translate(0, height);
     }
     
+    final full = coord.convert(const Offset(1, 0));
     final picture = recorder.endRecording();
-    final full = coord.convert(Offset(1, 0));
-    _lastImage = picture.toImageSync(
-          full.dx.toInt(), 
-          full.dy.toInt(), 
-        );
     return [
       ImageElement(
-        image: _lastImage!,
+        image: picture.toImageSync(
+          full.dx.toInt(),
+          full.dy.toInt(),
+        ),
         anchor: Offset.zero,
         defaultAlign: Alignment.bottomRight,
-        style: ImageStyle(
-        ),
+        style: ImageStyle(),
       )
     ];
   }
